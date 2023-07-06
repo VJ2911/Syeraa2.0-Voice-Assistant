@@ -1,0 +1,280 @@
+import pyttsx3 
+import speech_recognition as sr
+import datetime
+import wikipedia 
+import webbrowser
+import os
+import smtplib
+import tkinter as tk
+from tkinter import *
+from PIL import ImageTk, Image
+import threading
+from alpha_vantage.timeseries import TimeSeries
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from pprint import pprint
+import sys
+from alpha_vantage.sectorperformance import SectorPerformances
+
+import openai
+openai.api_key = "enter your openai api key"
+
+def ask_gpt(prompt, print_output=False):
+    
+    completions = openai.Completion.create(
+        engine='text-davinci-003',  
+        temperature=0.5,            
+        prompt=prompt,           
+        max_tokens=100,             
+        n=1,                        
+        stop=None,                  
+    )
+
+    if print_output:
+        print(completions)
+
+    return completions.choices[0].text
+
+'''
+elif 'stock price' in query:
+            ts = TimeSeries(key='IMR34UVH4O5EYMTC',output_format='pandas')
+            symbol = query.replace("stock price", "")
+            data, meta_data = ts.get_intraday(symbol=symbol,interval='1min', outputsize='full')
+            data['4. close'].plot()
+            plt.title(symbol)
+            plt.ylabel("Price in Dollars")
+            plt.xlabel("Timestamp")
+            win = tk.Tk() # Create the tkinter window
+            win.title("STOCK")
+            win.geometry("500x300")
+            canvas = FigureCanvasTkAgg(plt.gcf()  , master=win) # Convert the Figure to a tkinter widget
+            canvas.get_tk_widget().pack() # Show the widget on the screen
+            canvas.draw() 
+            win.mainloop() '''
+
+# #stockqueries viewing the chart of stock
+
+# ts = TimeSeries(key='IMR34UVH4O5EYMTC',output_format='pandas')
+# symbol=input("which stock to look for?")
+# data, meta_data = ts.get_intraday(symbol=symbol,interval='1min', outputsize='full')
+# data['4. close'].plot()
+# plt.title(symbol)
+# plt.ylabel("Price in Dollars")
+# plt.xlabel("Timestamp")
+# win = tk.Tk() # Create the tkinter window
+# win.title("STOCK CHART VIEWER")
+# win.geometry("500x300")
+# canvas = FigureCanvasTkAgg(plt.gcf()  , master=win) # Convert the Figure to a tkinter widget
+# canvas.get_tk_widget().pack() # Show the widget on the screen
+# canvas.draw() 
+# win.mainloop() 
+
+# #stockqueries gettng info regarding dividends and all
+
+# ts = TimeSeries(key='IMR34UVH4O5EYMTC',output_format='pandas')
+# symbol=input("which stock to look for?")
+# data, meta_data = ts.get_daily_adjusted(symbol=symbol, outputsize='full')
+# pprint(data.head())
+# win1 = tk.Tk() 
+# txt = Text(win1)
+# txt.pack() 
+# class PrintToTXT(object): 
+#     def write(self, s): 
+#          txt.insert(END, s)
+
+# sys.stdout = PrintToTXT() 
+# print (data)
+# win1.title("STOCK MONITOR")
+# win1.geometry("700x400")
+# win1.mainloop() 
+
+# #stockqueries viewing sector pergormances
+
+# sp = SectorPerformances(key='IMR34UVH4O5EYMTC', output_format='pandas')
+# data, meta_data = sp.get_sector()
+# data['Rank A: Real-Time Performance'].plot(kind='bar')
+# plt.title('Real Time Performance (%) per Sector')
+# plt.tight_layout()
+# plt.grid()
+# plt.ylabel("Performance Percentage")
+# plt.xlabel("Sectors")
+# win2 = tk.Tk() # Create the tkinter window
+# win2.title("Real Time Performance (%) per Sector")
+# #win.geometry("500x300")
+# canvas = FigureCanvasTkAgg(plt.gcf()  , master=win2) # Convert the Figure to a tkinter widget
+# canvas.get_tk_widget().pack() # Show the widget on the screen
+# canvas.draw() 
+# win2.mainloop() 
+
+# from alpha_vantage.cryptocurrencies import CryptoCurrencies
+# crypto_api = CryptoCurrencies(key='IMR34UVH4O5EYMTC', output_format= "pandas")
+# from_currency=input("convert from")
+# to_currency=input("convert to")
+# crypto_api.get_digital_currency_exchange_rate(
+#     from_currency=from_currency, 
+#     to_currency=to_currency
+# )[0].transpose()
+
+# import csv
+# import requests
+
+# # replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+# CSV_URL = 'https://www.alphavantage.co/query?function=IPO_CALENDAR&apikey=IMR34UVH4O5EYMTC'
+
+# with requests.Session() as s:
+#     download = s.get(CSV_URL)
+#     decoded_content = download.content.decode('utf-8')
+#     cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+#     my_list = list(cr)
+#     df=pd.DataFrame(my_list[1:],columns=my_list[0])
+#     print(df)
+
+# import requests
+# from bs4 import BeautifulSoup
+# url="https://www.bbc.com/news"
+# def get_unique_headlines(url):
+#     response = requests.get(url)
+#     soup = BeautifulSoup(response.text, 'html.parser')
+#     headlines = soup.find('body').find_all('h3')
+#     unwanted = ['BBC World News TV', 'BBC World Service Radio', 'News daily newsletter', 'Mobile app', 'Get in touch']
+#     unique_headlines = set()
+#     for x in headlines:
+#         headline_text = x.text.strip()
+#         if headline_text not in unwanted:
+#             unique_headlines.add(headline_text)
+#     return unique_headlines
+# print(get_unique_headlines(url))
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+# print(voices[1].id)
+engine.setProperty('voice', voices[1].id)
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+def wish():
+    speak("Hey Varun, Syera here how may i help you")       
+
+def takeCommand():
+    
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing...")    
+        query = r.recognize_google(audio, language='en-in')
+        print(f"User said: {query}\n")
+
+    except Exception as e:
+        print("Say that again please...")
+        speak("Sorry.. can you repeat please?")
+        return "None"
+    return query
+
+import tkinter as tk
+from PIL import Image, ImageTk
+from itertools import count, cycle
+class ImageLabel(tk.Label):
+    
+    def load(self, im):
+        if isinstance(im, str):
+            im = Image.open(im)
+        frames = []
+ 
+        try:
+            for i in count(1):
+                frames.append(ImageTk.PhotoImage(im.copy()))
+                im.seek(i)
+        except EOFError:
+            pass
+        self.frames = cycle(frames)
+ 
+        try:
+            self.delay = im.info['duration']
+        except:
+            self.delay = 100
+ 
+        if len(frames) == 1:
+            self.config(image=next(self.frames))
+        else:
+            self.next_frame()
+ 
+    def unload(self):
+        self.config(image=None)
+        self.frames = None
+ 
+    def next_frame(self):
+        if self.frames:
+            self.config(image=next(self.frames))
+            self.after(self.delay, self.next_frame)
+ 
+
+def query():
+    while True:
+        
+        query = takeCommand().lower()
+      
+        # Logic for executing tasks based on query
+        if 'wikipedia' in query:
+            speak('Searching Wikipedia...')
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences=2)
+            speak("According to Wikipedia")
+            print(results)
+            speak(results)
+
+        elif 'open youtube' in query:
+            webbrowser.open("youtube.com")
+
+        elif 'open google' in query:
+            webbrowser.open("google.com")
+
+        elif 'open stackoverflow' in query:
+            webbrowser.open("stackoverflow.com")   
+
+        elif 'the time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")    
+            speak(f"Sir, the time is {strTime}")
+
+        elif 'you can rest now' in query or 'quit' in query:
+            speak("Goodbye!")
+            root.destroy()
+            break
+            
+        else:
+            prompt = query
+            response = ask_gpt(query)
+            print(response)
+            speak(response)
+
+def start_query_loop():
+    # Create a new thread for running the query processing loop
+    query_thread = threading.Thread(target=query)
+    query_thread.daemon = True
+    query_thread.start()
+
+if __name__ == "__main__":
+    wish()
+
+    # Create the tkinter window and load the image
+    root = tk.Tk()
+    root.title("SYERAA-2.0")
+    lbl = ImageLabel(root)
+    lbl.pack()
+    lbl.load(r"C:\Users\VARUN\Downloads\2.0.gif")
+
+    # Start the query processing loop in a separate thread
+    start_query_loop()
+
+    # Run the tkinter event loop
+    root.mainloop()
+
+
+
+
+
