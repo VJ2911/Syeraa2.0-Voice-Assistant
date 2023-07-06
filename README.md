@@ -1,5 +1,5 @@
 # Syeraa2.0-Voice-Assistant
-Syeraa is an intelligent voice assistant designed to provide a seamless and interactive user experience. This repository contains the source code and documentation for Syeraa, enabling developers to understand and contribute to the voice assistant's development.
+Syeraa is an intelligent voice assistant designed to provide a seamless and interactive user experience. This repository contains the source code and documentation for Syeraa, enabling developers to understand and contribute to the voice assistant's development.syeraa is not only an imaginary assitant we can interact in root windows with it.
 
 Features
 Syeraa offers a wide range of features to assist users in various tasks. Some key features include:
